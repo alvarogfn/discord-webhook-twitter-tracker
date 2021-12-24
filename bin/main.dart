@@ -1,28 +1,51 @@
-import 'dart:convert';
 import 'dart:io';
-import 'package:dotenv/dotenv.dart' show load, clean, isEveryDefined, env;
-import 'package:http/http.dart' as http;
 
-main(List<String> parameters) {
+import 'package:dotenv/dotenv.dart' show load, env;
+import 'package:symmetrical_broccoli/controller/discord.dart';
+import 'package:symmetrical_broccoli/controller/twitter.dart';
+
+main(List<String> parameters) async {
   load();
-  String discordWebHook = env['WEBHOOK']!;
-  String twitterBearer = env['TWITTER_BEARER_TOKEN']!;
+  String WEBHOOK = env['WEBHOOK']!;
+  String TWITTER_BEARER_TOKEN = env['TWITTER_BEARER_TOKEN']!;
 
-  // http.post(
-  //   Uri.parse(discordWebHook),
-  //   headers: {'Content-Type': 'application/json'},
-  //   body: json.encode({
-  //     'content': 'oi',
-  //     'username': 'teste2',
-  //     'avatar_url': 'https://upload.wikimedia.org/wikipedia/commons/8/83/Bra-Cos_%281%29_%28cropped%29.jpg'
-  //   }),
-  // );
+  String TWITTER_KEY = env['TWITTER_KEY']!;
+  String TWITTER_KEY_SECRET = env['TWITTER_KEY_SECRET']!;
 
-  // http.get(
-  //   Uri.parse(
-  //       "https://api.twitter.com/2/tweets/search/recent?query=from:twitterdev"),
-  //   headers: {
-  //     'Authorization': 'Bearer $twitterBearer',
-  //   },
-  // ).then((r) => print(r.body));
+  Twitter twitter = Twitter(bearerToken: TWITTER_BEARER_TOKEN);
+
+  List<Map<String, String>> rules = [
+    {
+      "value":
+          "-is:retweet -is:reply (from:kimkataguiri OR from:socialistaancap OR from:arthurmoledoval)"
+    },
+    {
+      "value":
+          "(from:cwingert OR from:lochbyytt OR from:cristalescuite OR from:nephartoth)"
+    }
+  ];
+
+  Map<String, dynamic> parameters = {
+    "expansions": "author_id",
+    "user.fields": "username,profile_image_url",
+  };
+
+  Map actualRules = await twitter.getStreamRules();
+  sleep(Duration(milliseconds: 2500));
+  if (actualRules.isNotEmpty) {
+    sleep(Duration(milliseconds: 2500));
+    await twitter.deleteStreamRules(rulesId: actualRules);
+  }
+  await twitter.postStreamRules(rules: rules);
+  sleep(Duration(milliseconds: 2500));
+
+  twitter.stream(parameters: parameters).listen((tweet) async {
+    if (tweet != null) {
+      await Discord(webhook: WEBHOOK).postWebHookFromTweet(tweet);
+    } else {
+      print("/");
+    }
+  }).onError((err) {
+    print("Err: $err");
+  });
 }
