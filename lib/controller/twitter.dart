@@ -113,12 +113,15 @@ class Twitter {
         var streamedResponse = await _request.get<ResponseBody>(
           "tweets/search/stream",
           options: Options(
-              responseType: ResponseType.stream,
-              contentType: "application/json"),
+            responseType: ResponseType.stream,
+            contentType: "application/json",
+          ),
           queryParameters: parameters,
         );
         await for (var v in streamedResponse.data!.stream) {
-          await Future.delayed(Duration(seconds: 1));
+          // Future.delayed(Duration(minutes: 15)).whenComplete(() {
+          //   _request.close(force: true);
+          // });
           try {
             String tweetString = utf8.decode(v);
             Map tweetObject = json.decode(tweetString);
@@ -150,6 +153,7 @@ class Twitter {
         print("TIMEOUT(${subtractedTime}min): Reconnecting after timeout...");
         sleep(Duration(minutes: subtractedTime));
       } catch (e) {
+        _request.close();
         print("ERROR: Something was wrong with the code or network \n\n$e");
         break;
       }
@@ -165,6 +169,23 @@ class Twitter {
       );
       yield json.decode(response.data.toString());
       sleep(Duration(minutes: 5));
+    }
+  }
+
+  Future<Map> getTweet({
+    required List<String> tweetsId,
+    Map<String, dynamic>? parameters,
+  }) async {
+    print("GET: trying get a tweet");
+    try {
+      final response = await _request.get("tweets?ids=${tweetsId.join(',')}",
+          queryParameters: parameters,
+          options: Options(responseType: ResponseType.json));
+      return response.data;
+    } on DioError catch (e) {
+      return {"e": e};
+    } catch (e) {
+      return {"e": e};
     }
   }
 }
