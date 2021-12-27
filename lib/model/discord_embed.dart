@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:discord_webhook_twitter_tracker/model/tweet.dart';
+
 class DiscordEmbed {
-  final String description;
+  late String description;
   final int color = (Random().nextDouble() * 0xFFFFFF).toInt();
   String url = "";
   String timestamp = DateTime.now().toUtc().toIso8601String();
@@ -28,9 +30,7 @@ class DiscordEmbed {
     "url": "",
   };
 
-  late List attachments = [
-    {}
-  ];
+  late List attachments = [{}];
 
   DiscordEmbed({
     required this.description,
@@ -55,6 +55,21 @@ class DiscordEmbed {
     footer['icon_url'] = footerIconUrl ?? "";
 
     video['url'] = videoUrl ?? "";
+  }
+
+  DiscordEmbed.fromTweet(Tweet tweet) {
+    description = tweet.text;
+    url = tweet.url ?? "";
+    timestamp = tweet.createdAt ?? "";
+    if (tweet.name != null && tweet.username != null) {
+      author['name'] = "${tweet.name}(@${tweet.username})";
+    } else {
+      author['name'] = "undefined";
+    }
+    author['icon_url'] = tweet.profilePic;
+    image['url'] = tweet.media;
+    footer['text'] = tweet.url;
+    footer['icon_url'] = "https://i.imgur.com/WZivM7y.png";
   }
 
   @override

@@ -8,7 +8,6 @@ class Tweet {
 
   String get text {
     String text = _data['text'];
-    String serializedText;
     try {
       if ((_includes?['media'][0]['type'] != "photo")) {
         return text.replaceAll(text.substring(text.lastIndexOf('https')), '');

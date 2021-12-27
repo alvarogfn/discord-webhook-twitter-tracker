@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
-import 'package:symmetrical_broccoli/model/tweet.dart';
+import 'package:discord_webhook_twitter_tracker/model/tweet.dart';
 
 class Twitter {
   final String bearerToken;
@@ -21,7 +21,7 @@ class Twitter {
     );
   }
 
-  Future<Map> getStreamRules() async {
+  Future<Map?> getStreamRules() async {
     print("GET: Requesting current stream rules.");
     try {
       final response = await _request.get(
@@ -34,26 +34,19 @@ class Twitter {
         return body = {
           "ids": [...body['data'].map((v) => v['id'])]
         };
-      } else {
-        return {};
       }
     } on DioError catch (e) {
       print("FAILED: can't get rules from the server.");
       if (e.response != null) {
         var error = e.response!.data;
-        return {
-          "error": error['status'],
-          "message": error['detail'],
-        };
+        print(error);
       } else {
-        return {"error": 0, "message": "network offline"};
+        print("without network or url invalid.");
       }
     }
   }
 
-  Future<Map> deleteStreamRules({
-    required Map rulesId,
-  }) async {
+  Future<Map?> deleteStreamRules({required Map rulesId}) async {
     print("POST: Post for delete actual rules.");
     final response = await _request.post(
       "tweets/search/stream/rules",
@@ -61,18 +54,15 @@ class Twitter {
     );
 
     if (response.statusCode != 200) {
-      Map error = {
-        "code": response.statusCode,
-        "body": response.data.body,
-      };
-      print("FAILED: can't delete rules from the server. ${error['code']}");
-      return error;
+      String error = response.data.body;
+      print("FAILED: can't delete rules from the server. \n$error");
+    } else {
+      print("SUCESS: post for delete actual rules.");
+      return {"code": response.statusCode};
     }
-    print("SUCESS: post for delete actual rules.");
-    return {"code": response.statusCode};
   }
 
-  Future<Map> postStreamRules({required List<Map> rules}) async {
+  Future<Map?> postStreamRules({required List<Map> rules}) async {
     print("POST: set new rules into the server. \n$rules");
     try {
       final response = await _request.post(
@@ -82,31 +72,17 @@ class Twitter {
       print("SUCESS: set new rules to the server.");
       return {"code": response.statusCode};
     } on DioError catch (e) {
+      print("FAILED: can't get rules from the server.");
       if (e.response != null) {
-        switch (e.response!.statusCode) {
-          case 201:
-            return {"code": e.response!.statusCode};
-          default:
-            {
-              Map error = {
-                "code": e.response!.statusCode,
-                "body": e.message,
-              };
-              print(
-                  "FAILED: can't set new rules to the server. ${error['code']}");
-              return error;
-            }
-        }
+        var error = e.response!.data;
+        print(error);
       } else {
-        print("NETWORK ERROR: can't connect with the API");
-        return {"error": 0};
+        print("without network or url invalid.");
       }
-    } catch (e) {
-      return {"error": e};
     }
   }
 
-  Stream<Tweet?> stream({Map<String, dynamic>? parameters}) async* {
+  Stream<Tweet?> stream() async* {
     while (true) {
       print("GET: streaming tweets with rules.");
       try {
@@ -116,7 +92,12 @@ class Twitter {
             responseType: ResponseType.stream,
             contentType: "application/json",
           ),
-          queryParameters: parameters,
+          queryParameters: {
+            "expansions": "author_id,attachments.media_keys",
+            "user.fields": "username,profile_image_url",
+            "tweet.fields": "created_at,attachments,author_id,entities,id,text",
+            "media.fields": "media_key,preview_image_url,url",
+          },
         );
         await for (var v in streamedResponse.data!.stream) {
           // Future.delayed(Duration(minutes: 15)).whenComplete(() {
@@ -160,27 +141,35 @@ class Twitter {
     }
   }
 
-  Stream timeline(String userId, [Map<String, dynamic>? parameters]) async* {
+  Stream timeline(String userId) async* {
     while (true) {
-      parameters ??= {};
       var response = await _request.get(
         "users/$userId/tweets",
-        queryParameters: parameters,
+        queryParameters: {
+          "expansions": "author_id,attachments.media_keys",
+          "user.fields": "username,profile_image_url",
+          "tweet.fields": "created_at,attachments,author_id,entities,id,text",
+          "media.fields": "media_key,preview_image_url,url",
+        },
       );
       yield json.decode(response.data.toString());
       sleep(Duration(minutes: 5));
     }
   }
 
-  Future<Map> getTweet({
-    required List<String> tweetsId,
-    Map<String, dynamic>? parameters,
-  }) async {
+  Future<Map> getTweet({required List<String> tweetsId}) async {
     print("GET: trying get a tweet");
     try {
-      final response = await _request.get("tweets?ids=${tweetsId.join(',')}",
-          queryParameters: parameters,
-          options: Options(responseType: ResponseType.json));
+      final response = await _request.get(
+        "tweets?ids=${tweetsId.join(',')}",
+        options: Options(responseType: ResponseType.json),
+        queryParameters: {
+          "expansions": "author_id,attachments.media_keys",
+          "user.fields": "username,profile_image_url",
+          "tweet.fields": "created_at,attachments,author_id,entities,id,text",
+          "media.fields": "media_key,preview_image_url,url",
+        },
+      );
       return response.data;
     } on DioError catch (e) {
       return {"e": e};

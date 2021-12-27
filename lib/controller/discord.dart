@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:symmetrical_broccoli/model/discord_embed.dart';
-import 'package:symmetrical_broccoli/model/discord_webhook.dart';
-import 'package:symmetrical_broccoli/model/tweet.dart';
+import 'package:discord_webhook_twitter_tracker/model/discord_embed.dart';
+import 'package:discord_webhook_twitter_tracker/model/discord_webhook.dart';
+import 'package:discord_webhook_twitter_tracker/model/tweet.dart';
 
 class Discord {
   final String webhook;
