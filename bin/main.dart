@@ -18,9 +18,8 @@ main(List<String> parameters) async {
   if (isEveryDefined(['RULES'])) {
     rules.add(json.decode(env['RULES']!)[0]);
   } else {
-    rules = [{}];
+    rules = [{}];   // set your rules here in code or in .env
   }
-  print(rules);
 
   Twitter twitter = Twitter(bearerToken: twitterBearToken);
   Discord discord = Discord(webhook: webhook);
