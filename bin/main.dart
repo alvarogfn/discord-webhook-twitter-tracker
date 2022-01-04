@@ -15,9 +15,10 @@ main(List<String> parameters) async {
   String twitterBearToken = env['TWITTER_BEARER_TOKEN']!;
 
   List<Map> rules = [];
-  if (isEveryDefined(['RULES'])) {
+  
+  try {
     rules.add(json.decode(env['RULES']!)[0]);
-  } else {
+  } catch (_) {
     rules = [{}];   // set your rules here in code or in .env
   }
 
