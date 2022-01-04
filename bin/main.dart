@@ -17,7 +17,7 @@ main(List<String> parameters) async {
   List<Map> rules = [];
   
   try {
-    rules.add(json.decode(env['RULES']!)[0]);
+    rules = [...json.decode(env['RULES']!)];
   } catch (_) {
     rules = [{}];   // set your rules here in code or in .env
   }
