@@ -55,13 +55,13 @@ class Tweet {
 
   String? get url {
     try {
+      return _data["entities"]?["urls"].last["url"];
+    } catch (_) {
       if (id != null && username != null) {
         return "https://twitter.com/$username/status/$id";
       } else {
-        return _data['entities']?["urls"].last['expanded_url'];
+        return null;
       }
-    } catch (_) {
-      return null;
     }
   }
 
