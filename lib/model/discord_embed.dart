@@ -15,17 +15,15 @@ class DiscordEmbed {
   };
   late Map thumbnail = {
     "url": "",
-    "height": 350,
-    "width": 350,
+    "height": 25,
+    "width": 25,
   };
   late Map image = {
     "url": "",
-    "height": 1200,
-    "width": 1200,
   };
   late Map footer = {
-    "text": "",
-    "icon_url": "",
+    "text": "github.com/alvarogfn",
+    "icon_url": "https://i.imgur.com/UPeHfNR.png",
   };
   late Map provider = {
     "name": "alvarogfn",
@@ -64,15 +62,15 @@ class DiscordEmbed {
 
     image['url'] = imageUrl ?? "";
 
-    footer['text'] = footerText ?? "";
-    footer['icon_url'] = footerIconUrl ?? "";
+    // footer['text'] = footerText ?? "";
+    // footer['icon_url'] = footerIconUrl ?? "";
 
     video['url'] = videoUrl ?? "";
   }
 
   DiscordEmbed.fromTweet(Tweet tweet) {
     description = tweet.text;
-    title = "\n\n\nVER NO TWITTER";
+    title = "ᴠᴇʀ ɴᴏ ᴛᴡɪᴛᴛᴇʀ";
     url = tweet.url ?? "";
     timestamp = tweet.createdAt ?? "";
     author['name'] = tweet.username;
@@ -104,7 +102,7 @@ class DiscordEmbed {
       "title": title,
       "color": color,
       "url": url,
-      "thumbnail": thumbnail,
+      // "thumbnail": thumbnail,
       "timestamp": timestamp,
       "author": author,
       "image": image,
