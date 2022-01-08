@@ -15,6 +15,8 @@ class DiscordEmbed {
   };
   late Map thumbnail = {
     "url": "",
+    "height": 350,
+    "width": 350,
   };
   late Map image = {
     "url": "",
@@ -70,7 +72,7 @@ class DiscordEmbed {
 
   DiscordEmbed.fromTweet(Tweet tweet) {
     description = tweet.text;
-    title = "ᴠᴇʀ ɴᴏ ᴛᴡɪᴛᴛᴇʀ";
+    title = "VER NO TWITTER";
     url = tweet.url ?? "";
     timestamp = tweet.createdAt ?? "";
     author['name'] = tweet.username;
