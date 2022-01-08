@@ -104,7 +104,7 @@ class DiscordEmbed {
       "title": title,
       "color": color,
       "url": url,
-      "thumbnail": thumbnail,
+      // "thumbnail": thumbnail,
       "timestamp": timestamp,
       "author": author,
       "image": image,
