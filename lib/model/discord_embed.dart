@@ -22,7 +22,7 @@ class DiscordEmbed {
     "url": "",
   };
   late Map footer = {
-    "text": "github.com/alvarogfn",
+    "text": "https://rebrand.ly/kasoke",
     "icon_url": "https://i.imgur.com/UPeHfNR.png",
   };
   late Map provider = {
