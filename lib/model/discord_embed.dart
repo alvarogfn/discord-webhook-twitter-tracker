@@ -74,7 +74,7 @@ class DiscordEmbed {
     url = tweet.url ?? "";
     timestamp = tweet.createdAt ?? "";
     if (tweet.name != null && tweet.username != null) {
-      author['name'] = "${tweet.name} @${tweet.username}";
+      author['name'] = "${tweet.name}(@${tweet.username})";
     } else {
       author['name'] = "undefined";
     }
