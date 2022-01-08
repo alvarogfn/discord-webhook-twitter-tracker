@@ -72,7 +72,7 @@ class DiscordEmbed {
 
   DiscordEmbed.fromTweet(Tweet tweet) {
     description = tweet.text;
-    title = "VER NO TWITTER";
+    title = "\n\n\nVER NO TWITTER";
     url = tweet.url ?? "";
     timestamp = tweet.createdAt ?? "";
     author['name'] = tweet.username;
@@ -104,7 +104,7 @@ class DiscordEmbed {
       "title": title,
       "color": color,
       "url": url,
-      // "thumbnail": thumbnail,
+      "thumbnail": thumbnail,
       "timestamp": timestamp,
       "author": author,
       "image": image,
