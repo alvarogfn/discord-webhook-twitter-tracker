@@ -46,8 +46,6 @@ class DiscordEmbed {
     String? authorUrl,
     String? thumbnailUrl,
     String? imageUrl,
-    String? footerText,
-    String? footerIconUrl,
     String? videoUrl,
   }) {
     url = url ?? "";
@@ -62,9 +60,6 @@ class DiscordEmbed {
 
     image['url'] = imageUrl ?? "";
 
-    // footer['text'] = footerText ?? "";
-    // footer['icon_url'] = footerIconUrl ?? "";
-
     video['url'] = videoUrl ?? "";
   }
 
@@ -78,8 +73,6 @@ class DiscordEmbed {
     author['url'] = "https://twitter.com/${tweet.username}";
     image['url'] = tweet.media;
     thumbnail['url'] = tweet.profilePic;
-    footer['text'] = tweet.url;
-    footer['icon_url'] = "https://i.imgur.com/WZivM7y.png";
   }
 
   @override
