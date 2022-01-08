@@ -73,11 +73,7 @@ class DiscordEmbed {
     title = "ᴠᴇʀ ɴᴏ ᴛᴡɪᴛᴛᴇʀ";
     url = tweet.url ?? "";
     timestamp = tweet.createdAt ?? "";
-    if (tweet.name != null && tweet.username != null) {
-      author['name'] = "${tweet.name}(@${tweet.username})";
-    } else {
-      author['name'] = "undefined";
-    }
+    author['name'] = tweet.username;
     author['icon_url'] = tweet.profilePic;
     author['url'] = "https://twitter.com/${tweet.username}";
     image['url'] = tweet.media;
