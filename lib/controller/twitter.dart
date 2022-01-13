@@ -93,7 +93,8 @@ class Twitter {
             contentType: "application/json",
           ),
           queryParameters: {
-            "expansions": "author_id,attachments.media_keys",
+            ""
+                "expansions": "author_id,attachments.media_keys",
             "user.fields": "username,profile_image_url",
             "tweet.fields": "created_at,attachments,author_id,entities,id,text",
             "media.fields": "media_key,preview_image_url,url",
@@ -111,6 +112,8 @@ class Twitter {
               includes: tweetObject['includes'],
             );
           } on FormatException catch (_) {
+            yield null;
+          } catch (_) {
             yield null;
           }
         }
