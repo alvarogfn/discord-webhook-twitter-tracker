@@ -54,14 +54,10 @@ class Tweet {
   }
 
   String? get url {
-    try {
-      return _data["entities"]?["urls"].last["url"];
-    } catch (_) {
-      if (id != null && username != null) {
-        return "https://twitter.com/$username/status/$id";
-      } else {
-        return null;
-      }
+    if (id != null && username != null) {
+      return "https://twitter.com/$username/status/$id";
+    } else {
+      return null;
     }
   }
 
