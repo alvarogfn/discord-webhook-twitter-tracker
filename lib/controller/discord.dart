@@ -40,9 +40,9 @@ class Discord {
       final response = await Dio().post(
         webhook,
         data: {
-          'username': 'Preciso de um nome',
+          'username': 'Corujeno',
           'avatar_url':
-              'https://upload.wikimedia.org/wikipedia/en/thumb/e/ed/Nyan_cat_250px_frame.PNG/220px-Nyan_cat_250px_frame.PNG',
+              'https://imgur.com/3pzJQup.png',
           'embeds': embedsList,
         },
         options: Options(
