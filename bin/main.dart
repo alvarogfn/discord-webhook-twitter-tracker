@@ -15,11 +15,11 @@ main(List<String> parameters) async {
   String twitterBearToken = env['TWITTER_BEARER_TOKEN']!;
 
   List<Map> rules = [];
-  
+
   try {
     rules = [...json.decode(env['RULES']!)];
   } catch (_) {
-    rules = [{}];   // set your rules here in code or in .env
+    rules = [{}]; // set your rules here in code or in .env
   }
 
   Twitter twitter = Twitter(bearerToken: twitterBearToken);
