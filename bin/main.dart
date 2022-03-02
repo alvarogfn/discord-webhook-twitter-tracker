@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:discord_webhook_twitter_tracker/model/tweet.dart';
 import 'package:dotenv/dotenv.dart' show load, env, isEveryDefined;
 import 'package:discord_webhook_twitter_tracker/controller/discord.dart';
 import 'package:discord_webhook_twitter_tracker/controller/twitter.dart';
