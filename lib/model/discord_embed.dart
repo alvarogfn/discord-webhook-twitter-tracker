@@ -48,7 +48,7 @@ class DiscordEmbed {
 
   late List attachments = [{}];
 
-  late List<Map<String, dynamic>> fields = [];
+  List<Map> fields = [];
 
   DiscordEmbed({
     required this.description,
@@ -90,11 +90,20 @@ class DiscordEmbed {
     image['url'] = tweet.media;
     thumbnail['url'] = tweet.profilePic;
 
+    lang = tweet.lang ?? "pt";
+
+    for (var reply in tweet.conversationList) {
+      if (reply != null) {
+        fields.add({
+          "name": reply["name"],
+          "value": reply["value"],
+        });
+      }
+    }
+
     if (tweet.url != null) {
       fields.add({"value": url, "name": "Link do Tweet"});
     }
-
-    lang = tweet.lang;
   }
 
   @override
@@ -125,7 +134,7 @@ class DiscordEmbed {
       "footer": footer,
       "provider": provider,
       "attachments": attachments,
-      "fields": fields
+      "fields": fields,
     };
   }
 

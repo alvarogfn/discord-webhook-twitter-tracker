@@ -93,10 +93,11 @@ class Twitter {
             contentType: "application/json",
           ),
           queryParameters: {
-            ""
-                "expansions": "author_id,attachments.media_keys",
+            "expansions":
+                "author_id,attachments.media_keys,in_reply_to_user_id,referenced_tweets.id",
             "user.fields": "username,profile_image_url",
-            "tweet.fields": "created_at,attachments,author_id,entities,id,text",
+            "tweet.fields":
+                "created_at,attachments,author_id,entities,id,text,conversation_id,referenced_tweets,in_reply_to_user_id",
             "media.fields": "media_key,preview_image_url,url",
           },
         );
@@ -108,7 +109,7 @@ class Twitter {
             String tweetString = utf8.decode(v);
             Map tweetObject = json.decode(tweetString);
             yield Tweet(
-              data: tweetObject['data'],
+              data: [tweetObject['data']],
               includes: tweetObject['includes'],
             );
           } on FormatException catch (_) {
@@ -167,23 +168,21 @@ class Twitter {
         "tweets?ids=${tweetsId.join(',')}",
         options: Options(responseType: ResponseType.json),
         queryParameters: {
-          "expansions": "author_id,attachments.media_keys",
+          "expansions":
+              "author_id,attachments.media_keys,in_reply_to_user_id,referenced_tweets.id",
           "user.fields": "username,profile_image_url",
           "tweet.fields":
-              "created_at,attachments,author_id,entities,id,text,lang",
+              "created_at,attachments,author_id,entities,id,text,conversation_id,referenced_tweets,in_reply_to_user_id",
           "media.fields": "media_key,preview_image_url,url",
         },
       );
-      
       return Tweet(
-        data: response.data['data'][0],
+        data: response.data['data'],
         includes: response.data['includes'],
       );
-    } on DioError catch (e) {
-      print(e);
+    } on DioError catch (_) {
       return null;
-    } catch (e) {
-      print(e);
+    } catch (_) {
       return null;
     }
   }

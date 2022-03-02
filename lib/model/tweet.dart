@@ -1,5 +1,5 @@
 class Tweet {
-  final Map _data;
+  final List _data;
   Map? _includes;
 
   Tweet({data, includes}) : _data = data {
@@ -7,7 +7,7 @@ class Tweet {
   }
 
   String get text {
-    String text = _data['text'];
+    String text = _data[0]['text'];
     try {
       if ((_includes?['media'][0]['type'] != "photo")) {
         return text.replaceAll(text.substring(text.lastIndexOf('https')), '');
@@ -31,7 +31,7 @@ class Tweet {
 
   String? get id {
     try {
-      return _data['id'];
+      return _data[0]['id'];
     } catch (_) {
       return null;
     }
@@ -63,7 +63,7 @@ class Tweet {
 
   String? get createdAt {
     try {
-      return _data['created_at'];
+      return _data[0]['created_at'];
     } catch (_) {
       return null;
     }
@@ -80,12 +80,45 @@ class Tweet {
     }
   }
 
-  String get lang {
-    if (_data["lang"] == null) {
-      return "";
+  String? get lang {
+    if (_data[0]["lang"] == null) {
+      return null;
     } else {
-      return _data["lang"];
+      return _data[0]["lang"];
     }
+  }
+
+  List<Map?> get conversationList {
+    if (_includes?["tweets"] == null) return [];
+    if (_includes?["users"] == null) return [];
+
+    final List referencedTweets = _data[0]["referenced_tweets"] ?? [];
+
+    List<Map<String, String>> tweetsReferences = [];
+
+    for (var reference in referencedTweets) {
+      var content = _includes?["tweets"]
+          .firstWhere((t) => t["id"] == reference["id"], orElse: () => null);
+
+      var users = _includes?["users"];
+      var user = users.firstWhere((u) => u["id"] == content["author_id"],
+          orElse: () => "");
+
+      if (user is Map) {
+        user = "${user['name']} (@${user['username']})";
+      }
+
+      String labelName;
+      if (reference["type"] == "quoted") {
+        labelName = "Citando $user:";
+      } else {
+        labelName = "Respondendo $user:";
+      }
+
+      tweetsReferences.add({"value": content["text"], "name": labelName});
+    }
+
+    return tweetsReferences;
   }
 
   Map? get tweet {
