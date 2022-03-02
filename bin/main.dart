@@ -49,18 +49,9 @@ main(List<String> parameters) async {
 //   });
 // }
 
-  Tweet? tweet = await twitter.getTweet(tweetsId: ["1498405204680749057"]);
+  Tweet? tweet = await twitter.getTweet(tweetsId: ["1498852995102130176"]);
   DiscordEmbed embed = DiscordEmbed.fromTweet(tweet!);
-  Map? translatedTweet = await tweet.translateTweet(to: "pt");
-  if (translatedTweet != null) {
-    embed.appendFields([
-      {
-        "name": "Traduzido do ${translatedTweet['from']}",
-        "value": translatedTweet['value'],
-      },
-    ]);
-  }
+  await embed.translateContent("pt");
   var discordResponse = await discord.postEmbed(embeds: [embed]);
-
   print(discordResponse);
 }

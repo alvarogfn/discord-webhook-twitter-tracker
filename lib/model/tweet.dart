@@ -1,5 +1,3 @@
-import 'package:translator/translator.dart';
-
 class Tweet {
   final Map _data;
   Map? _includes;
@@ -88,20 +86,6 @@ class Tweet {
     } else {
       return _data["lang"];
     }
-  }
-
-  Future<Map?> translateTweet({required String to}) async {
-    if (to.toLowerCase() == lang.toLowerCase()) return null;
-
-    final translator = GoogleTranslator();
-
-    Translation textTranslated = await translator.translate(text, to: to);
-
-    return {
-      "from": textTranslated.sourceLanguage.name,
-      "value": textTranslated.text,
-      "to": textTranslated.targetLanguage.name,
-    };
   }
 
   Map? get tweet {

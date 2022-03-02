@@ -1,11 +1,14 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:discord_webhook_twitter_tracker/model/tweet.dart';
+import 'package:translator/translator.dart';
 
 class DiscordEmbed {
   late String description;
 
   late String title;
+
+  String lang = "pt";
 
   final int color = (Random().nextDouble() * 0xFFFFFF).toInt();
 
@@ -58,6 +61,7 @@ class DiscordEmbed {
     String? thumbnailUrl,
     String? imageUrl,
     String? videoUrl,
+    String? lang,
   }) {
     url = url ?? "";
     title = title ?? "";
@@ -72,6 +76,7 @@ class DiscordEmbed {
     image['url'] = imageUrl ?? "";
 
     video['url'] = videoUrl ?? "";
+    lang = lang ?? "pt";
   }
 
   DiscordEmbed.fromTweet(Tweet tweet) {
@@ -88,6 +93,8 @@ class DiscordEmbed {
     if (tweet.url != null) {
       fields.add({"value": url, "name": "Link do Tweet"});
     }
+
+    lang = tweet.lang;
   }
 
   @override
@@ -132,5 +139,25 @@ class DiscordEmbed {
         fields.insert(0, {"name": name, "value": value, "inline": inline});
       }
     }
+  }
+
+  Future<void> translateContent(String toLang) async {
+    if (lang == toLang) return;
+
+    final translator = GoogleTranslator();
+
+    Translation textTranslated =
+        await translator.translate(description, to: toLang);
+
+    String sourceLanguageName = textTranslated.sourceLanguage.name;
+    String targetLanguageName = textTranslated.targetLanguage.name;
+
+    appendFields([
+      {
+        "value": textTranslated.text,
+        "name":
+            "Traduzido do $sourceLanguageName para $targetLanguageName (Google Translate)",
+      }
+    ]);
   }
 }
