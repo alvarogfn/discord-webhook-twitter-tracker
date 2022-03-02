@@ -36,6 +36,8 @@ class DiscordEmbed {
 
   late List attachments = [{}];
 
+  List<Map> fields = [];
+
   DiscordEmbed({
     required this.description,
     String? title,
@@ -68,11 +70,20 @@ class DiscordEmbed {
     title = "ᴠᴇʀ ɴᴏ ᴛᴡɪᴛᴛᴇʀ";
     url = tweet.url ?? "";
     timestamp = tweet.createdAt ?? "";
-    author['name'] = tweet.username;
+    author['name'] = "${tweet.name} (@${tweet.username})";
     author['icon_url'] = tweet.profilePic;
     author['url'] = "https://twitter.com/${tweet.username}";
     image['url'] = tweet.media;
     thumbnail['url'] = tweet.profilePic;
+
+    for (var reply in tweet.conversationList) {
+      if (reply != null) {
+        fields.add({
+          "name": reply["name"],
+          "value": reply["value"],
+        });
+      }
+    }
   }
 
   @override
@@ -102,7 +113,8 @@ class DiscordEmbed {
       "video": video,
       "footer": footer,
       "provider": provider,
-      "attachments": attachments
+      "attachments": attachments,
+      "fields": fields,
     };
   }
 }

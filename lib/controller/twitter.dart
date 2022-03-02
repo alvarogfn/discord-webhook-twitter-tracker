@@ -93,10 +93,11 @@ class Twitter {
             contentType: "application/json",
           ),
           queryParameters: {
-            ""
-                "expansions": "author_id,attachments.media_keys",
+            "expansions":
+                "author_id,attachments.media_keys,in_reply_to_user_id,referenced_tweets.id",
             "user.fields": "username,profile_image_url",
-            "tweet.fields": "created_at,attachments,author_id,entities,id,text",
+            "tweet.fields":
+                "created_at,attachments,author_id,entities,id,text,conversation_id,referenced_tweets,in_reply_to_user_id",
             "media.fields": "media_key,preview_image_url,url",
           },
         );
@@ -108,7 +109,7 @@ class Twitter {
             String tweetString = utf8.decode(v);
             Map tweetObject = json.decode(tweetString);
             yield Tweet(
-              data: tweetObject['data'],
+              data: [tweetObject['data']],
               includes: tweetObject['includes'],
             );
           } on FormatException catch (_) {
@@ -160,24 +161,29 @@ class Twitter {
     }
   }
 
-  Future<Map> getTweet({required List<String> tweetsId}) async {
+  Future<Tweet?> getTweet({required List<String> tweetsId}) async {
     print("GET: trying get a tweet");
     try {
       final response = await _request.get(
         "tweets?ids=${tweetsId.join(',')}",
         options: Options(responseType: ResponseType.json),
         queryParameters: {
-          "expansions": "author_id,attachments.media_keys",
+          "expansions":
+              "author_id,attachments.media_keys,in_reply_to_user_id,referenced_tweets.id",
           "user.fields": "username,profile_image_url",
-          "tweet.fields": "created_at,attachments,author_id,entities,id,text",
+          "tweet.fields":
+              "created_at,attachments,author_id,entities,id,text,conversation_id,referenced_tweets,in_reply_to_user_id",
           "media.fields": "media_key,preview_image_url,url",
         },
       );
-      return response.data;
-    } on DioError catch (e) {
-      return {"e": e};
-    } catch (e) {
-      return {"e": e};
+      return Tweet(
+        data: response.data['data'],
+        includes: response.data['includes'],
+      );
+    } on DioError catch (_) {
+      return null;
+    } catch (_) {
+      return null;
     }
   }
 }
