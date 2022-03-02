@@ -1,30 +1,42 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:discord_webhook_twitter_tracker/model/tweet.dart';
+import 'package:translator/translator.dart';
 
 class DiscordEmbed {
   late String description;
+
   late String title;
+
+  String lang = "pt";
+
   final int color = (Random().nextDouble() * 0xFFFFFF).toInt();
+
   String url = "";
+
   String timestamp = DateTime.now().toUtc().toIso8601String();
+
   late Map author = {
     "name": "",
     "icon_url": "",
     "url": "",
   };
+
   late Map thumbnail = {
     "url": "",
     "height": 25,
     "width": 25,
   };
+
   late Map image = {
     "url": "",
   };
+
   late Map footer = {
     "text": "https://rebrand.ly/kasoke",
     "icon_url": "https://i.imgur.com/UPeHfNR.png",
   };
+
   late Map provider = {
     "name": "alvarogfn",
     "url": "https://github.com/alvarogfn",
@@ -49,6 +61,7 @@ class DiscordEmbed {
     String? thumbnailUrl,
     String? imageUrl,
     String? videoUrl,
+    String? lang,
   }) {
     url = url ?? "";
     title = title ?? "";
@@ -63,11 +76,12 @@ class DiscordEmbed {
     image['url'] = imageUrl ?? "";
 
     video['url'] = videoUrl ?? "";
+    lang = lang ?? "pt";
   }
 
   DiscordEmbed.fromTweet(Tweet tweet) {
     description = tweet.text;
-    title = "ᴠᴇʀ ɴᴏ ᴛᴡɪᴛᴛᴇʀ";
+    title = tweet.url ?? "";
     url = tweet.url ?? "";
     timestamp = tweet.createdAt ?? "";
     author['name'] = "${tweet.name} (@${tweet.username})";
@@ -76,12 +90,11 @@ class DiscordEmbed {
     image['url'] = tweet.media;
     thumbnail['url'] = tweet.profilePic;
 
+    lang = tweet.lang ?? "pt";
+
     for (var reply in tweet.conversationList) {
       if (reply != null) {
-        fields.add({
-          "name": reply["name"],
-          "value": reply["value"],
-        });
+        appendFields([reply as Map<String, dynamic>]);
       }
     }
   }
@@ -116,5 +129,43 @@ class DiscordEmbed {
       "attachments": attachments,
       "fields": fields,
     };
+  }
+
+  appendFields(List<Map<String, dynamic>> fieldsList) {
+    for (var field in fieldsList) {
+      final String? value = field["value"];
+      final String? name = field["name"];
+      final bool inline = field["inline"] ?? false;
+
+      if (value != null && name != null) {
+        fields.insert(0, {"name": name, "value": value, "inline": inline});
+      }
+    }
+  }
+
+  Future<void> translateContent(String toLang) async {
+    if (lang == toLang) return;
+
+    final translator = GoogleTranslator();
+
+    String sourceLanguageName;
+    String translation;
+
+    try {
+      Translation textTranslated =
+          await translator.translate(description, to: toLang);
+
+      sourceLanguageName = textTranslated.sourceLanguage.name;
+      translation = textTranslated.text;
+    } catch (_) {
+      print("the translation has failed, ignoring it");
+      return;
+    }
+    appendFields([
+      {
+        "value": translation,
+        "name": "Traduzido do $sourceLanguageName (Google Translate)",
+      }
+    ]);
   }
 }

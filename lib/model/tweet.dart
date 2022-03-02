@@ -80,6 +80,14 @@ class Tweet {
     }
   }
 
+  String? get lang {
+    if (_data[0]["lang"] == null) {
+      return null;
+    } else {
+      return _data[0]["lang"];
+    }
+  }
+
   List<Map?> get conversationList {
     if (_includes?["tweets"] == null) return [];
     if (_includes?["users"] == null) return [];
@@ -110,8 +118,6 @@ class Tweet {
       tweetsReferences.add({"value": content["text"], "name": labelName});
     }
 
-    // print(tweetsReferences);
-
     return tweetsReferences;
   }
 
@@ -124,6 +130,7 @@ class Tweet {
       'url': url,
       'createdAt': createdAt,
       'media': media,
+      'lang': lang,
     };
   }
 }

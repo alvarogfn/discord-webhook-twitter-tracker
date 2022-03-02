@@ -34,6 +34,7 @@ main(List<String> parameters) async {
   twitter.stream().listen((tweet) async {
     if (tweet != null) {
       DiscordEmbed embed = DiscordEmbed.fromTweet(tweet);
+      await embed.translateContent("pt");
       var discordResponse = await discord.postEmbed(embeds: [embed]);
       if (discordResponse == 204) {
         print("🥳");
