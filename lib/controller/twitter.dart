@@ -97,7 +97,7 @@ class Twitter {
                 "author_id,attachments.media_keys,in_reply_to_user_id,referenced_tweets.id",
             "user.fields": "username,profile_image_url",
             "tweet.fields":
-                "created_at,attachments,author_id,entities,id,text,conversation_id,referenced_tweets,in_reply_to_user_id",
+                "created_at,attachments,author_id,entities,id,text,conversation_id,referenced_tweets,in_reply_to_user_id,lang",
             "media.fields": "media_key,preview_image_url,url",
           },
         );
@@ -172,7 +172,7 @@ class Twitter {
               "author_id,attachments.media_keys,in_reply_to_user_id,referenced_tweets.id",
           "user.fields": "username,profile_image_url",
           "tweet.fields":
-              "created_at,attachments,author_id,entities,id,text,conversation_id,referenced_tweets,in_reply_to_user_id",
+              "created_at,attachments,author_id,entities,id,text,conversation_id,referenced_tweets,in_reply_to_user_id,lang",
           "media.fields": "media_key,preview_image_url,url",
         },
       );

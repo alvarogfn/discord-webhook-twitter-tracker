@@ -26,32 +26,26 @@ main(List<String> parameters) async {
   Twitter twitter = Twitter(bearerToken: twitterBearToken);
   Discord discord = Discord(webhook: webhook);
 
-//   Map? actualRules = await twitter.getStreamRules();
-//   if (actualRules != null && actualRules.isNotEmpty) {
-//     await twitter.deleteStreamRules(rulesId: actualRules);
-//   }
-//   await twitter.postStreamRules(rules: rules);
+  Map? actualRules = await twitter.getStreamRules();
+  if (actualRules != null && actualRules.isNotEmpty) {
+    await twitter.deleteStreamRules(rulesId: actualRules);
+  }
+  await twitter.postStreamRules(rules: rules);
 
-//   twitter.stream().listen((tweet) async {
-//     if (tweet != null) {
-//       DiscordEmbed embed = DiscordEmbed.fromTweet(tweet);
-//       var discordResponse = await discord.postEmbed(embeds: [embed]);
-//       if (discordResponse == 204) {
-//         print("🥳");
-//       } else {
-//         print("😭");
-//       }
-//     } else {
-//       print("👀");
-//     }
-//   }).onError((err) {
-//     print("Err: $err");
-//   });
-// }
-
-  Tweet? tweet = await twitter.getTweet(tweetsId: ["1498852995102130176"]);
-  DiscordEmbed embed = DiscordEmbed.fromTweet(tweet!);
-  await embed.translateContent("pt");
-  var discordResponse = await discord.postEmbed(embeds: [embed]);
-  print(discordResponse);
+  twitter.stream().listen((tweet) async {
+    if (tweet != null) {
+      DiscordEmbed embed = DiscordEmbed.fromTweet(tweet);
+      await embed.translateContent("pt");
+      var discordResponse = await discord.postEmbed(embeds: [embed]);
+      if (discordResponse == 204) {
+        print("🥳");
+      } else {
+        print("😭");
+      }
+    } else {
+      print("👀");
+    }
+  }).onError((err) {
+    print("Err: $err");
+  });
 }

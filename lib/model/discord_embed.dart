@@ -81,7 +81,7 @@ class DiscordEmbed {
 
   DiscordEmbed.fromTweet(Tweet tweet) {
     description = tweet.text;
-    title = "";
+    title = tweet.url ?? "";
     url = tweet.url ?? "";
     timestamp = tweet.createdAt ?? "";
     author['name'] = "${tweet.name} (@${tweet.username})";
@@ -94,15 +94,8 @@ class DiscordEmbed {
 
     for (var reply in tweet.conversationList) {
       if (reply != null) {
-        fields.add({
-          "name": reply["name"],
-          "value": reply["value"],
-        });
+        appendFields([reply as Map<String, dynamic>]);
       }
-    }
-
-    if (tweet.url != null) {
-      fields.add({"value": url, "name": "Link do Tweet"});
     }
   }
 
@@ -155,17 +148,23 @@ class DiscordEmbed {
 
     final translator = GoogleTranslator();
 
-    Translation textTranslated =
-        await translator.translate(description, to: toLang);
+    String sourceLanguageName;
+    String translation;
 
-    String sourceLanguageName = textTranslated.sourceLanguage.name;
-    String targetLanguageName = textTranslated.targetLanguage.name;
+    try {
+      Translation textTranslated =
+          await translator.translate(description, to: toLang);
 
+      sourceLanguageName = textTranslated.sourceLanguage.name;
+      translation = textTranslated.text;
+    } catch (_) {
+      print("the translation has failed, ignoring it");
+      return;
+    }
     appendFields([
       {
-        "value": textTranslated.text,
-        "name":
-            "Traduzido do $sourceLanguageName para $targetLanguageName (Google Translate)",
+        "value": translation,
+        "name": "Traduzido do $sourceLanguageName (Google Translate)",
       }
     ]);
   }
